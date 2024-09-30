@@ -8,6 +8,23 @@ from basicsr.utils import imwrite
 
 from gfpgan import GFPGANer
 
+def final_enhancement(img):
+    # Denoising 
+    # TODO: Parameters should be tuned 
+    img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    # Sharpening
+    # TODO: Change parameters 
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    img = cv2.filter2D(img, -1, kernel)
+
+    # Color enhancement
+    y_channel, u_channel, v_channel = cv2.split(img)
+    v_channel = cv2.equalizeHist(y_channel)
+    img = cv2.merge((y_channel, u_channel, v_channel))
+
+    return img
+
+
 
 def main():
     """Inference demo for GFPGAN (for users).
@@ -139,6 +156,7 @@ def main():
             only_center_face=args.only_center_face,
             paste_back=True,
             weight=args.weight)
+        restored_img = final_enhancement(restored_img)
 
         # save faces
         for idx, (cropped_face, restored_face) in enumerate(zip(cropped_faces, restored_faces)):
