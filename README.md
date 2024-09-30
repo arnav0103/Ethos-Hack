@@ -1,7 +1,10 @@
-# GFPGAN Image Restoration
+# Ethos-Hack 
 
 ## Overview
 This project utilizes the GFPGAN model for enhancing and restoring images, particularly focusing on face restoration. It extracts frames from videos, processes images, and saves the results in specified directories.
+
+## Credits
+This project utilizes the GFPGAN model created by the [GFPGAN team](https://github.com/TencentARC/GFPGAN).
 
 ## Requirements
 You can install the required packages using:
