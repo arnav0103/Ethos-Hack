@@ -43,5 +43,24 @@ def extract_faces(vid_dir, max_faces):
         cap.release()
         print(f"Extracted {faces_ext} faces from {vid_path}.")
 
-for vid_dir in [9,10,12,13,14,15,16]:
-    extract_faces('./' + str(vid_dir), max_faces)
+def final_enhancement(img):
+    # Denoising 
+    # TODO: Parameters should be tuned 
+    img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    # Sharpening
+    # TODO: Change parameters 
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    img = cv2.filter2D(img, -1, kernel)
+
+    # Color enhancement
+    y_channel, u_channel, v_channel = cv2.split(img)
+    y_channel = cv2.equalizeHist(y_channel)
+    img = cv2.merge((y_channel, u_channel, v_channel))
+    img = cv2.cvtColor(img, cv2.COLOR_YUV2BGR)
+
+    return img
+
+
+vid_dir = ""
+#for vid_dir in [9,10,12,13,14,15,16]:
+extract_faces('./' + str(vid_dir), max_faces)
