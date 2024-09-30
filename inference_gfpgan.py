@@ -10,19 +10,14 @@ from gfpgan import GFPGANer
 
 def final_enhancement(img):
     # Denoising 
-    # TODO: Parameters should be tuned 
-    img = cv2.fastNlMeansDenoisingColored(img, None, 10, 10, 7, 21)
+    img = cv2.GaussianBlur(img, (3, 3), 0)
     # Sharpening
-    # TODO: Change parameters 
     kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
     img = cv2.filter2D(img, -1, kernel)
-
-    # Color enhancement
-    y_channel, u_channel, v_channel = cv2.split(img)
-    v_channel = cv2.equalizeHist(y_channel)
-    img = cv2.merge((y_channel, u_channel, v_channel))
-
-    return img
+    # Contrast enhancement
+    alpha = 0.99  
+    img = cv2.convertScaleAbs(img, alpha=alpha, beta=0)
+    return img;
 
 
 
@@ -147,8 +142,6 @@ def main():
         basename, ext = os.path.splitext(img_name)
         input_img = cv2.imread(img_path, cv2.IMREAD_COLOR)
 
-        # removing noise from image
-        #input_img = cv2.fastNlMeansDenoisingColored(input_img, 10, 10, 7, 15)
         # restore faces and background if necessary
         cropped_faces, restored_faces, restored_img = restorer.enhance(
             input_img,
@@ -156,7 +149,7 @@ def main():
             only_center_face=args.only_center_face,
             paste_back=True,
             weight=args.weight)
-        restored_img = final_enhancement(restored_img)
+#        restored_faces = final_enhancement(restored_faces)
 
         # save faces
         for idx, (cropped_face, restored_face) in enumerate(zip(cropped_faces, restored_faces)):
@@ -170,8 +163,10 @@ def main():
                 save_face_name = f'{basename}_{idx:02d}.png'
             save_restore_path = os.path.join(args.output, 'restored_faces', save_face_name)
             imwrite(restored_face, save_restore_path)
+            restored_face2 = cv2.imread(save_restore_path, cv2.IMREAD_COLOR)
+            restored_face2 = final_enhancement(restored_face2)
             # save comparison image
-            cmp_img = np.concatenate((cropped_face, restored_face), axis=1)
+            cmp_img = np.concatenate((cropped_face, restored_face2), axis=1)
             imwrite(cmp_img, os.path.join(args.output, 'cmp', f'{basename}_{idx:02d}.png'))
 
         # save restored img
