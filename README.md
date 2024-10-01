@@ -32,6 +32,10 @@ pip install -r requirements.txt
    - Comparison images will be saved in `results/cmp`.
    - The restored images will be saved in `results/restored_imgs`.
 
+5. **Examples**:
+   - **Example 1**: Contains a video file `example1/cctv1.mp4`.  After running the program, the results will be saved in the `example1/results` folder.
+   - **Example 2**: Similar to Example 1, it also contains a video file `example2/cctv2.mp4` and its results folder.
+
 ## Customization
 You can customize the input and output directories by modifying the arguments in the `inference_gfpgan.py` script. The default input directory is `inputs/whole_imgs` and the output directory is `results`.
 
